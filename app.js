@@ -1,103 +1,87 @@
-// // Cognito Authentication and API Gateway Integration
-// const AWS_REGION = "us-east-1"; // Replace with your AWS region
-// const USER_POOL_ID = "your-user-pool-id"; // Replace with your Cognito User Pool ID
-// const CLIENT_ID = "your-client-id"; // Replace with your Cognito App Client ID
-// const API_GATEWAY_URL = "https://api.example.com/get-presigned-url"; // Replace with your API Gateway URL
+// Cognito Authentication and API Gateway Integration
+const AWS_REGION = "us-east-1"; // Replace with your AWS region
+const USER_POOL_ID = "your-user-pool-id"; // Replace with your Cognito User Pool ID
+const CLIENT_ID = "your-client-id"; // Replace with your Cognito App Client ID
+const API_GATEWAY_URL = "https://api.example.com/get-presigned-url"; // Replace with your API Gateway URL
 
-// AWS.config.region = AWS_REGION;
-// const cognitoUserPool = new AmazonCognitoIdentity.CognitoUserPool({
-//   UserPoolId: USER_POOL_ID,
-//   ClientId: CLIENT_ID,
-// });
 
-// // Handle Sign-In
-// document.getElementById("signin-form")?.addEventListener("submit", async (e) => {
-//   e.preventDefault();
-//   const username = document.getElementById("username").value;
-//   const password = document.getElementById("password").value;
 
-//   const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-//     Username: username,
-//     Password: password,
-//   });
+  // Handle File Upload
+  document.getElementById("upload-button").addEventListener("click", async () => {
+    const fileInput = document.getElementById("file-input");
+    const file = fileInput.files[0];
 
-//   const cognitoUser = new AmazonCognitoIdentity.CognitoUser({
-//     Username: username,
-//     Pool: cognitoUserPool,
-//   });
+    if (file) {
+      try {
+        // Get presigned URL from API Gateway
+        const response = await fetch(API_GATEWAY_URL, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("idToken")}`,
+          },
+          body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+        });
 
-//   cognitoUser.authenticateUser(authenticationDetails, {
-//     onSuccess: (result) => {
-//       const idToken = result.getIdToken().getJwtToken();
-//       sessionStorage.setItem("idToken", idToken);
-//       sessionStorage.setItem("currentUser", username);
-//       window.location.href = "upload.html";
-//     },
-//     onFailure: (err) => {
-//       console.error(err);
-//       alert("Authentication failed: " + err.message);
-//     },
-//   });
-// });
+        if (!response.ok) {
+          throw new Error("Failed to get presigned URL");
+        }
 
-// // Redirect if not authenticated
-// if (window.location.pathname.endsWith("upload.html")) {
-//   const idToken = sessionStorage.getItem("idToken");
-//   if (!idToken) {
-//     window.location.href = "signin.html";
-//   } else {
-//     document.getElementById("current-user").textContent =
-//       sessionStorage.getItem("currentUser");
-//   }
+        const { uploadUrl } = await response.json();
 
-//   // Handle File Upload
-//   document.getElementById("upload-button").addEventListener("click", async () => {
-//     const fileInput = document.getElementById("file-input");
-//     const file = fileInput.files[0];
+        // Upload file to S3
+        const uploadResponse = await fetch(uploadUrl, {
+          method: "PUT",
+          headers: { "Content-Type": file.type },
+          body: file,
+        });
 
-//     if (file) {
-//       try {
-//         // Get presigned URL from API Gateway
-//         const response = await fetch(API_GATEWAY_URL, {
-//           method: "POST",
-//           headers: {
-//             Authorization: `Bearer ${sessionStorage.getItem("idToken")}`,
-//           },
-//           body: JSON.stringify({ fileName: file.name, fileType: file.type }),
-//         });
+        if (uploadResponse.ok) {
+          document.getElementById("upload-status").textContent =
+            "Upload successful!";
+        } else {
+          throw new Error("Upload failed");
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById("upload-status").textContent =
+          "Upload failed. Please try again or contact support.";
+      }
+    } else {
+      alert("Please select a file to upload.");
+    }
+  });
 
-//         if (!response.ok) {
-//           throw new Error("Failed to get presigned URL");
-//         }
 
-//         const { uploadUrl } = await response.json();
+// Display the current user's username in the header
+document.addEventListener("DOMContentLoaded", () => {
+  const cognitoUser = userPool.getCurrentUser();
 
-//         // Upload file to S3
-//         const uploadResponse = await fetch(uploadUrl, {
-//           method: "PUT",
-//           headers: { "Content-Type": file.type },
-//           body: file,
-//         });
+  if (cognitoUser) {
+      // Display the logged-in user's username in the header
+      document.getElementById("current-user").textContent = cognitoUser.getUsername();
+  } else {
+      console.warn("No logged-in user found.");
+      document.getElementById("current-user").textContent = "Guest";
+  }
+});
 
-//         if (uploadResponse.ok) {
-//           document.getElementById("upload-status").textContent =
-//             "Upload successful!";
-//         } else {
-//           throw new Error("Upload failed");
-//         }
-//       } catch (err) {
-//         console.error(err);
-//         document.getElementById("upload-status").textContent =
-//           "Upload failed. Please try again or contact support.";
-//       }
-//     } else {
-//       alert("Please select a file to upload.");
-//     }
-//   });
-// }
+// Handle the sign-out process
+document.getElementById("sign-out")?.addEventListener("click", (event) => {
+  event.preventDefault(); // Prevent default link behavior
 
-// // Sign-Out Logic
-// document.getElementById("sign-out")?.addEventListener("click", () => {
-//   sessionStorage.clear();
-//   window.location.href = "signin.html";
-// });
+  const cognitoUser = userPool.getCurrentUser();
+
+  if (cognitoUser) {
+      // Use Cognito's signOut method to clear the local session
+      cognitoUser.signOut();
+      console.log("Cognito session ended.");
+  } else {
+      console.warn("No Cognito user found.");
+  }
+
+  // Clear app session and redirect
+  sessionStorage.clear();
+  window.location.href = "signin.html"; // Redirect to the login page
+});
+
+
