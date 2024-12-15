@@ -52,14 +52,14 @@ var SaaMsc = window.SaaMsc || {};
      * Cognito User Pool functions
      */
 
-    function register(email, password, onSuccess, onFailure) {
-        var dataEmail = {
-            Name: 'email',
-            Value: email
+    function register(username, password, onSuccess, onFailure) {
+        var dataUsername = {
+            Name: 'preferred_username',
+            Value: username
         };
-        var attributeEmail = new AmazonCognitoIdentity.CognitoUserAttribute(dataEmail);
+        var attributeUsername = new AmazonCognitoIdentity.CognitoUserAttribute(dataUsername);
 
-        userPool.signUp(toUsername(email), password, [attributeEmail], null,
+        userPool.signUp(username, password, [attributeUsername], null,
             function signUpCallback(err, result) {
                 if (!err) {
                     onSuccess(result);
@@ -70,21 +70,21 @@ var SaaMsc = window.SaaMsc || {};
         );
     }
 
-    function signin(email, password, onSuccess, onFailure) {
+    function signin(username, password, onSuccess, onFailure) {
         var authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-            Username: toUsername(email),
+            Username: username,
             Password: password
         });
 
-        var cognitoUser = createCognitoUser(email);
+        var cognitoUser = createCognitoUser(username);
         cognitoUser.authenticateUser(authenticationDetails, {
             onSuccess: onSuccess,
             onFailure: onFailure
         });
     }
 
-    function verify(email, code, onSuccess, onFailure) {
-        createCognitoUser(email).confirmRegistration(code, true, function confirmCallback(err, result) {
+    function verify(username, code, onSuccess, onFailure) {
+        createCognitoUser(username).confirmRegistration(code, true, function confirmCallback(err, result) {
             if (!err) {
                 onSuccess(result);
             } else {
@@ -93,15 +93,11 @@ var SaaMsc = window.SaaMsc || {};
         });
     }
 
-    function createCognitoUser(email) {
+    function createCognitoUser(username) {
         return new AmazonCognitoIdentity.CognitoUser({
-            Username: toUsername(email),
+            Username: username,
             Pool: userPool
         });
-    }
-
-    function toUsername(email) {
-        return email.replace('@', '-at-');
     }
 
     /*
@@ -109,28 +105,34 @@ var SaaMsc = window.SaaMsc || {};
      */
 
     $(function onDocReady() {
-        $('#signinForm').submit(handleSignin);
+        $('#signin-form').on('submit', handleSignin);
         $('#registrationForm').submit(handleRegister);
         $('#verifyForm').submit(handleVerify);
     });
 
     function handleSignin(event) {
-        var email = $('#emailInputSignin').val();
+        var username = $('#usernameInputSignin').val();
         var password = $('#passwordInputSignin').val();
         event.preventDefault();
-        signin(email, password,
+
+        if (!username || !password) {
+            alert('Please enter both username and password.');
+            return;
+        }
+
+        signin(username, password,
             function signinSuccess() {
                 console.log('Successfully Logged In');
                 window.location.href = 'upload.html';
             },
             function signinError(err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
         );
     }
 
     function handleRegister(event) {
-        var email = $('#emailInputRegister').val();
+        var username = $('#usernameInputRegister').val();
         var password = $('#passwordInputRegister').val();
         var password2 = $('#password2InputRegister').val();
 
@@ -143,22 +145,22 @@ var SaaMsc = window.SaaMsc || {};
             }
         };
         var onFailure = function registerFailure(err) {
-            alert(err);
+            alert(err.message || JSON.stringify(err));
         };
         event.preventDefault();
 
         if (password === password2) {
-            register(email, password, onSuccess, onFailure);
+            register(username, password, onSuccess, onFailure);
         } else {
             alert('Passwords do not match');
         }
     }
 
     function handleVerify(event) {
-        var email = $('#emailInputVerify').val();
+        var username = $('#usernameInputVerify').val();
         var code = $('#codeInputVerify').val();
         event.preventDefault();
-        verify(email, code,
+        verify(username, code,
             function verifySuccess(result) {
                 console.log('call result: ' + result);
                 console.log('Successfully verified');
@@ -166,7 +168,7 @@ var SaaMsc = window.SaaMsc || {};
                 window.location.href = signinUrl;
             },
             function verifyError(err) {
-                alert(err);
+                alert(err.message || JSON.stringify(err));
             }
         );
     }
