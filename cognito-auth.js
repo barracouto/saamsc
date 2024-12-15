@@ -183,9 +183,12 @@ var SaaMsc = window.SaaMsc || {};
             console.warn("No Cognito user found.");
         }
     
-        // Clear app session and redirect
-        sessionStorage.clear();
-        window.location.href = "index.html"; // Redirect to the login page
+        // Clear all storage
+        localStorage.clear(); // Clear any local storage data
+        sessionStorage.clear(); // Clear any session storage data
+    
+        // Redirect to sign-in page
+        window.location.href = "index.html";
     });
 
     function handleVerify(event) {
