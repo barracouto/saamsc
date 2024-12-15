@@ -18,6 +18,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
   if (file) {
     try {
+      // Step 1: Request presigned URL
       statusMessage.textContent = "Requesting upload URL...";
       console.log("Requesting presigned URL for file:", file.name);
 
@@ -51,37 +52,36 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
-      console.log(`Uploading file to presigned URL: ${url}`);
+      console.log(`Uploading file "${file.name}" to presigned URL: ${url}`);
+      console.log(`File Content-Type: ${file.type || "application/octet-stream"}`);
+      console.log("Sending file data to S3...");
 
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
 
-      // Set the required headers
+      // Use only Content-Type header
       const contentType = file.type || "application/octet-stream";
-      console.log("File Content-Type:", contentType);
       xhr.setRequestHeader("Content-Type", contentType);
-
-      // Explicitly include SSE header to match bucket policy
-      xhr.setRequestHeader("x-amz-server-side-encryption", "AES256");
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100);
           progressBar.style.width = `${percentComplete}%`;
           progressBar.textContent = `${percentComplete}%`;
-          console.log(`Upload progress: ${percentComplete}%`);
         }
       };
 
       xhr.onload = () => {
-        console.log("S3 PUT request completed. Status:", xhr.status);
+        console.log("S3 PUT Response Status:", xhr.status);
+        console.log("S3 PUT Response:", xhr.responseText);
+
         if (xhr.status === 200) {
           progressBar.style.width = "100%";
           progressBar.textContent = "100%";
           statusMessage.textContent = "Upload successful!";
           console.log("File uploaded successfully.");
         } else {
-          console.error("S3 PUT request failed. Response text:", xhr.responseText);
+          console.error(`S3 PUT request failed. Status: ${xhr.status}`);
           statusMessage.textContent = `Upload failed. Status: ${xhr.status}`;
         }
       };
@@ -91,10 +91,9 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         statusMessage.textContent = "Upload failed due to network error.";
       };
 
-      console.log("Sending file data to S3...");
       xhr.send(file);
     } catch (err) {
-      console.error("Error during upload process:", err.message);
+      console.error("Error:", err.message);
       statusMessage.textContent = `Upload failed. ${err.message}`;
     }
   } else {
