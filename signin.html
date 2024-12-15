@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Sign In</h1>
+    <form id="signin-form">
+      <label for="username">Username</label>
+      <input type="text" id="username" placeholder="Username" required>
+      <label for="password">Password</label>
+      <input type="password" id="password" placeholder="Password" required>
+      <a href="https://us-east-19przmfkfa.auth.us-east-1.amazoncognito.com/forgotPassword?client_id=3pcj7hsr3d32sj3pi68oeaf6g3&redirect_uri=https%3A%2F%2Fd84l1y8p4kdic.cloudfront.net&response_type=code&scope=email+openid+phone" id="forgot-password">Forgot Password?</a>
+      <button type="submit">Sign In</button>
+    </form>
+  </div>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1362.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6.3.1/dist/amazon-cognito-identity.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+

@@ -1,0 +1,37 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f5f5f5;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    text-align: center;
+    padding: 50px;
+  }
+  
+  input[type="text"], input[type="password"], input[type="file"] {
+    display: block;
+    margin: 20px auto;
+    padding: 10px;
+    width: 300px;
+  }
+  
+  button {
+    padding: 10px 20px;
+    background-color: #b3f0f5;
+    border: none;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background-color: #81e2eb;
+  }
+  
+  .header {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 20px;
+    background-color: #b3f0f5;
+  }
+  
