@@ -50,6 +50,10 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         throw new Error("Invalid presigned URL received!");
       }
 
+      // Log query parameters for debugging
+      const urlObj = new URL(url);
+      console.log("Presigned URL Query Parameters:", urlObj.searchParams.toString());
+
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
       console.log(`Uploading file "${file.name}" to presigned URL: ${url}`);
@@ -82,6 +86,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
           console.log("File uploaded successfully.");
         } else {
           console.error(`S3 PUT request failed. Status: ${xhr.status}`);
+          console.error(`S3 Response: ${xhr.responseText}`);
           statusMessage.textContent = `Upload failed. Status: ${xhr.status}`;
         }
       };
