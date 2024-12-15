@@ -51,37 +51,3 @@ const API_GATEWAY_URL = "https://api.example.com/get-presigned-url"; // Replace 
     }
   });
 
-
-// Display the current user's username in the header
-document.addEventListener("DOMContentLoaded", () => {
-  const cognitoUser = userPool.getCurrentUser();
-
-  if (cognitoUser) {
-      // Display the logged-in user's username in the header
-      document.getElementById("current-user").textContent = cognitoUser.getUsername();
-  } else {
-      console.warn("No logged-in user found.");
-      document.getElementById("current-user").textContent = "Guest";
-  }
-});
-
-// Handle the sign-out process
-document.getElementById("sign-out")?.addEventListener("click", (event) => {
-  event.preventDefault(); // Prevent default link behavior
-
-  const cognitoUser = userPool.getCurrentUser();
-
-  if (cognitoUser) {
-      // Use Cognito's signOut method to clear the local session
-      cognitoUser.signOut();
-      console.log("Cognito session ended.");
-  } else {
-      console.warn("No Cognito user found.");
-  }
-
-  // Clear app session and redirect
-  sessionStorage.clear();
-  window.location.href = "signin.html"; // Redirect to the login page
-});
-
-
