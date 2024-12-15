@@ -43,3 +43,39 @@ curl -X POST https://z0uqpw0kcg.execute-api.us-east-1.amazonaws.com \
         "Content-Type" = "application/json"
     } `
     -Body '{"key": "test-file.txt", "action": "putObject"}'
+
+
+
+
+
+$apiUrl = "https://m2fb5z7rqi.execute-api.us-east-1.amazonaws.com/dev/"
+$headers = @{
+    "Content-Type"  = "application/json"
+    "Authorization" = "eyJraWQiOiJlMVAyOEpsVkttZXVOVmhkQk1nUE4yM1NnVE8rbXllekp2b1ZCYlVkZmNnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjNGQ4ODQzOC05MDExLTcwMzgtMDEyZi1hYzExNTk0NGM4YWEiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV85cHJ6TWZrZkEiLCJjb2duaXRvOnVzZXJuYW1lIjoic3RlcGhhbmllIiwib3JpZ2luX2p0aSI6IjYxNTZiMGYyLTEzYWItNGQ1Mi1iYmIzLTI1NGU0YmMyNmFlNSIsImF1ZCI6IjNwY2o3aHNyM2QzMnNqM3BpNjhvZWFmNmczIiwiZXZlbnRfaWQiOiJiYjVhYTY5Ni05OTlkLTQzOWQtOTdmNi04MDZmNGViMzdhNDUiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTczNDI5NTU5NCwiZXhwIjoxNzM0Mjk5MTk0LCJpYXQiOjE3MzQyOTU1OTQsImp0aSI6ImFmN2ZjNTEzLTQyYjItNGEwMy04ODE1LWJlYTk5ZjQxNjc4ZSIsImVtYWlsIjoic3RlcGhhbmllLmNvdXRvQGNkdy5jb20ifQ.c7V1lnOSigUsC2l7P2ZP8xL-B9MK0W8fK7IFN0_5RHTOCLr5irHrI8y4Ql1Ti9q3iqGwZx6FWw08bwUmFYynd0CYqVnYTA3NCZUOGkwGOZ46UtpmEQHyVN4JKz28cp6CHY2KiBfFO6xoTSddftgdGM_Nrg3UL-CVSLjr9gmREdqNgfvWtyXA1YKEfljFTyJNlmoUgJeMHYwb5a_n7BXvoOu1o7iv0oqatZznDNlzHqW_HNO7Saxo5kVqFecMw8E6e63MjwySWENhUTHL-xwE2DsYcYklOv0i5kId7suWbieeK9DwbS3tD8Luw8AM1Qq1Ek91x2mTOOYh3D_TZgRMzQ"
+}
+
+$body = @{
+    "key"    = "userdata.txt"
+    "action" = "putObject"
+} | ConvertTo-Json
+
+$response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $body
+
+$response
+
+
+
+$headers = @{
+    "Content-Type"  = "application/json"
+    "Authorization" = "eyJraWQiOiJlMVAyOEpsVkttZXVOVmhkQk1nUE4yM1NnVE8rbXllekp2b1ZCYlVkZmNnPSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiJjNGQ4ODQzOC05MDExLTcwMzgtMDEyZi1hYzExNTk0NGM4YWEiLCJpc3MiOiJodHRwczpcL1wvY29nbml0by1pZHAudXMtZWFzdC0xLmFtYXpvbmF3cy5jb21cL3VzLWVhc3QtMV85cHJ6TWZrZkEiLCJjb2duaXRvOnVzZXJuYW1lIjoic3RlcGhhbmllIiwib3JpZ2luX2p0aSI6IjYxNTZiMGYyLTEzYWItNGQ1Mi1iYmIzLTI1NGU0YmMyNmFlNSIsImF1ZCI6IjNwY2o3aHNyM2QzMnNqM3BpNjhvZWFmNmczIiwiZXZlbnRfaWQiOiJiYjVhYTY5Ni05OTlkLTQzOWQtOTdmNi04MDZmNGViMzdhNDUiLCJ0b2tlbl91c2UiOiJpZCIsImF1dGhfdGltZSI6MTczNDI5NTU5NCwiZXhwIjoxNzM0Mjk5MTk0LCJpYXQiOjE3MzQyOTU1OTQsImp0aSI6ImFmN2ZjNTEzLTQyYjItNGEwMy04ODE1LWJlYTk5ZjQxNjc4ZSIsImVtYWlsIjoic3RlcGhhbmllLmNvdXRvQGNkdy5jb20ifQ.c7V1lnOSigUsC2l7P2ZP8xL-B9MK0W8fK7IFN0_5RHTOCLr5irHrI8y4Ql1Ti9q3iqGwZx6FWw08bwUmFYynd0CYqVnYTA3NCZUOGkwGOZ46UtpmEQHyVN4JKz28cp6CHY2KiBfFO6xoTSddftgdGM_Nrg3UL-CVSLjr9gmREdqNgfvWtyXA1YKEfljFTyJNlmoUgJeMHYwb5a_n7BXvoOu1o7iv0oqatZznDNlzHqW_HNO7Saxo5kVqFecMw8E6e63MjwySWENhUTHL-xwE2DsYcYklOv0i5kId7suWbieeK9DwbS3tD8Luw8AM1Qq1Ek91x2mTOOYh3D_TZgRMzQ"
+}
+$body = @{
+    "key"    = "userdata.txt"
+    "action" = "putObject"
+} | ConvertTo-Json -Depth 1
+Write-Host "Request Body:" -ForegroundColor Cyan
+Write-Output $body
+$apiUrl = "https://m2fb5z7rqi.execute-api.us-east-1.amazonaws.com/dev/"
+$response = Invoke-RestMethod -Uri $apiUrl -Method Post -Headers $headers -Body $body -ContentType "application/json"
+Write-Host "Response:" -ForegroundColor Green
+Write-Output $response
