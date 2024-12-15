@@ -188,6 +188,24 @@ var SaaMsc = window.SaaMsc || {};
         window.location.href = "index.html"; // Redirect to the login page
     });
 
+    document.addEventListener("DOMContentLoaded", () => {
+        const cognitoUser = userPool.getCurrentUser();
+    
+        if (cognitoUser) {
+            // Check if the user's session is still valid
+            cognitoUser.getSession((err, session) => {
+                if (err || !session.isValid()) {
+                    console.warn("Session is invalid or expired.");
+                    window.location.href = "accessdenied.html"; // Redirect to Access Denied page
+                }
+            });
+        } else {
+            console.warn("No user session found.");
+            window.location.href = "accessdenied.html"; // Redirect to Access Denied page
+        }
+    });
+    
+
     function handleVerify(event) {
         var username = $('#usernameInputVerify').val();
         var code = $('#codeInputVerify').val();
