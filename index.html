@@ -5,6 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In</title>
   <link rel="stylesheet" href="style.css">
+  <script>
+    // Clear all storage when the sign-in page is loaded
+    document.addEventListener("DOMContentLoaded", () => {
+        console.log("Clearing all session and local storage...");
+        localStorage.clear(); // Clear any local storage data
+        sessionStorage.clear(); // Clear any session storage data
+    });
+</script>
 </head>
 <body>
   <div class="container">
