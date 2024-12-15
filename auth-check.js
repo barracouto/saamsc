@@ -2,7 +2,12 @@
 
 // Function to redirect to the Access Denied page
 function redirectToAccessDenied() {
-    window.location.href = "accessdenied.html"; // Redirect to Access Denied page
+    // Clear localStorage and sessionStorage to ensure full logout
+    localStorage.clear();
+    sessionStorage.clear();
+
+    // Redirect to Access Denied page
+    window.location.href = "accessdenied.html";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -23,12 +28,9 @@ document.addEventListener("DOMContentLoaded", () => {
             cognitoUser.getSession((err, session) => {
                 if (err || !session.isValid()) {
                     console.warn("Session is invalid or expired.");
-                    // Force clear session and redirect
-                    localStorage.clear();
-                    sessionStorage.clear();
                     redirectToAccessDenied();
                 } else {
-                    console.log("Session is valid."); // For debugging purposes
+                    console.log("Session is valid."); // Debugging
                 }
             });
         } else {

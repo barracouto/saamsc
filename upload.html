@@ -8,7 +8,13 @@
   <meta http-equiv="Cache-Control" content="no-store, no-cache, must-revalidate, max-age=0">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-
+  <script>
+    // Force a full page reload when the page is loaded
+    if (performance.navigation.type === 2) {
+        // Clears cache when navigating via Back/Forward button
+        location.reload(true);
+    }
+  </script>
 </head>
 <body>
   <header>
