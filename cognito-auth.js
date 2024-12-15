@@ -181,15 +181,18 @@ var SaaMsc = window.SaaMsc || {};
             console.log("Cognito session ended.");
         } else {
             console.warn("No Cognito user found.");
+            // Redirect to the sign-in page if no user is found
+            window.location.href = "index.html";
         }
     
         // Clear all storage
         localStorage.clear(); // Clear any local storage data
         sessionStorage.clear(); // Clear any session storage data
     
-        // Redirect to sign-in page
+        // Ensure redirection to the sign-in page happens after cleanup
         window.location.href = "index.html";
     });
+    
 
     function handleVerify(event) {
         var username = $('#usernameInputVerify').val();
