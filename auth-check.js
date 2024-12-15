@@ -1,7 +1,18 @@
 // auth-check.js
 
+// Ensure AWS Cognito SDK and configuration (_config) are loaded before this script
+
 document.addEventListener("DOMContentLoaded", () => {
-    const cognitoUser = userPool.getCurrentUser(); // Check if a user is logged in
+    // Reinitialize the user pool
+    const poolData = {
+        UserPoolId: _config.cognito.userPoolId, // Cognito User Pool ID
+        ClientId: _config.cognito.userPoolClientId, // Cognito App Client ID
+    };
+
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+
+    // Check if the user is logged in
+    const cognitoUser = userPool.getCurrentUser();
 
     if (cognitoUser) {
         // Verify session validity
