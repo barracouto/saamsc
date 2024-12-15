@@ -27,12 +27,6 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         Authorization: `${idToken}`,
         "Content-Type": "application/json",
       });
-      console.log("Request being sent:", {
-        URL: API_GATEWAY_URL,
-        Method: requestDetails.method,
-        Headers: requestDetails.headers,
-        Body: requestDetails.body,
-      });
       const response = await fetch(API_GATEWAY_URL, {
         method: "POST",
         headers: {
