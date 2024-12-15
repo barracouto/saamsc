@@ -33,6 +33,21 @@ document.addEventListener("DOMContentLoaded", () => {
                     redirectToAccessDenied();
                 } else {
                     console.log("Session is valid.");
+
+                    // Store idToken in sessionStorage
+                    const idToken = session.getIdToken().getJwtToken();
+                    sessionStorage.setItem("idToken", idToken);
+
+                    // Log the idToken for debugging
+                    console.log("idToken stored in sessionStorage:", idToken);
+
+                    // Optionally display the username on the page
+                    cognitoUser.getUserAttributes((err, attributes) => {
+                        if (!err) {
+                            const username = attributes.find(attr => attr.Name === "email")?.Value || cognitoUser.getUsername();
+                            document.getElementById("current-user").textContent = username;
+                        }
+                    });
                 }
             });
         } else {
