@@ -8,29 +8,36 @@ function redirectToAccessDenied() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Reinitialize the user pool
-    const poolData = {
-        UserPoolId: _config.cognito.userPoolId, // Cognito User Pool ID
-        ClientId: _config.cognito.userPoolClientId, // Cognito App Client ID
-    };
+    try {
+        // Reinitialize the user pool
+        const poolData = {
+            UserPoolId: _config.cognito.userPoolId, // Cognito User Pool ID
+            ClientId: _config.cognito.userPoolClientId, // Cognito App Client ID
+        };
 
-    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+        const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-    // Check if the user is logged in
-    const cognitoUser = userPool.getCurrentUser();
+        // Check if the user is logged in
+        const cognitoUser = userPool.getCurrentUser();
 
-    if (cognitoUser) {
-        // Verify session validity
-        cognitoUser.getSession((err, session) => {
-            if (err || !session.isValid()) {
-                console.warn("Session is invalid or expired.");
-                redirectToAccessDenied();
-            } else {
-                console.log("Session is valid.");
-            }
-        });
-    } else {
-        console.warn("No user session found.");
-        redirectToAccessDenied();
+        if (cognitoUser) {
+            // Verify session validity
+            cognitoUser.getSession((err, session) => {
+                if (err || !session.isValid()) {
+                    console.warn("Session is invalid or expired.");
+                    // Clear stored user data and redirect
+                    sessionStorage.clear();
+                    redirectToAccessDenied();
+                } else {
+                    console.log("Session is valid.");
+                }
+            });
+        } else {
+            console.warn("No user session found.");
+            redirectToAccessDenied();
+        }
+    } catch (error) {
+        console.error("Error during auth check:", error);
+        redirectToAccessDenied(); // Redirect on failure
     }
 });
