@@ -18,10 +18,9 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
   if (file) {
     try {
-      // Step 1: Request Presigned URL
       statusMessage.textContent = "Requesting upload URL...";
       console.log("Requesting presigned URL...");
-      
+
       const response = await fetch(API_GATEWAY_URL, {
         method: "POST",
         headers: {
@@ -40,22 +39,21 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         throw new Error("Failed to get presigned URL");
       }
 
-      const jsonResponse = await response.json();
-      console.log("API Gateway Response:", jsonResponse);
+      const { url } = await response.json();
+      console.log("Received presigned URL:", url);
 
-      const { url } = jsonResponse;
       if (!url) {
-        throw new Error("Received invalid presigned URL!");
+        throw new Error("Invalid presigned URL received!");
       }
 
-      // Step 2: Upload file to S3 using PUT request
+      // Step 2: Upload file to S3 with no additional headers
       statusMessage.textContent = "Uploading file...";
       console.log(`Uploading file to presigned URL: ${url}`);
 
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
-      
-      // Content-Type only, no other headers for S3 PUT
+
+      // Use only Content-Type header; no other headers allowed
       xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
 
       xhr.upload.onprogress = (event) => {
@@ -71,22 +69,22 @@ document.getElementById("upload-button").addEventListener("click", async () => {
           progressBar.style.width = "100%";
           progressBar.textContent = "100%";
           statusMessage.textContent = "Upload successful!";
-          console.log("File uploaded successfully!");
+          console.log("File uploaded successfully.");
         } else {
-          console.error("S3 PUT request failed with status:", xhr.status);
-          statusMessage.textContent = "Upload failed during S3 PUT operation.";
+          console.error(`S3 PUT request failed. Status: ${xhr.status}`);
+          statusMessage.textContent = "Upload failed. S3 PUT request error.";
         }
       };
 
       xhr.onerror = () => {
-        console.error("S3 PUT request error:", xhr.statusText);
-        statusMessage.textContent = "Upload failed. Network error.";
+        console.error("Network error during S3 PUT request.");
+        statusMessage.textContent = "Upload failed due to network error.";
       };
 
       xhr.send(file);
     } catch (err) {
       console.error("Error:", err.message);
-      statusMessage.textContent = "Upload failed. Please try again.";
+      statusMessage.textContent = `Upload failed. ${err.message}`;
     }
   } else {
     alert("Please select a file to upload.");
