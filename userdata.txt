@@ -1,0 +1,31 @@
+#!/bin/bash
+# Update and install Apache HTTP server
+sudo su
+yum update -y
+yum install -y httpd aws-cli
+
+cd ../../../
+mkdir /var/www/html
+cd /var/www/html
+
+sudo yum install -y nodejs
+
+npm install oidc-client-ts --save
+
+# Start the HTTP server
+systemctl start httpd
+systemctl enable httpd
+
+
+
+# Download individual files from S3
+aws s3 cp s3://saa-msc-web-app-files/webapp/upload.html upload.html
+aws s3 cp s3://saa-msc-web-app-files/webapp/signin.html index.html
+aws s3 cp s3://saa-msc-web-app-files/webapp/accessdenied.html accessdenied.html
+aws s3 cp s3://saa-msc-web-app-files/webapp/app.js app.js
+aws s3 cp s3://saa-msc-web-app-files/webapp/style.css style.css
+
+# Set permissions for the files
+chmod -R 755 .
+
+
