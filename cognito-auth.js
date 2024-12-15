@@ -121,7 +121,7 @@ var SaaMsc = window.SaaMsc || {};
         signin(email, password,
             function signinSuccess() {
                 console.log('Successfully Logged In');
-                window.location.href = 'ride.html';
+                window.location.href = 'upload.html';
             },
             function signinError(err) {
                 alert(err);
