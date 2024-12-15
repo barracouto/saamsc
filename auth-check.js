@@ -2,6 +2,11 @@
 
 // Ensure AWS Cognito SDK and configuration (_config) are loaded before this script
 
+// Function to redirect to the Access Denied page
+function redirectToAccessDenied() {
+    window.location.href = "accessdenied.html"; // Redirect to Access Denied page
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     // Reinitialize the user pool
     const poolData = {
@@ -20,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
             if (err || !session.isValid()) {
                 console.warn("Session is invalid or expired.");
                 redirectToAccessDenied();
+            } else {
+                console.log("Session is valid.");
             }
         });
     } else {
@@ -27,8 +34,3 @@ document.addEventListener("DOMContentLoaded", () => {
         redirectToAccessDenied();
     }
 });
-
-// Function to redirect to the Access Denied page
-function redirectToAccessDenied() {
-    window.location.href = "accessdenied.html"; // Redirect to access denied page
-}
