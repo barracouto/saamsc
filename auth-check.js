@@ -2,17 +2,21 @@
 
 // Function to redirect to the Access Denied page
 function redirectToAccessDenied() {
-    // Clear localStorage and sessionStorage to ensure full logout
     localStorage.clear();
     sessionStorage.clear();
-
-    // Redirect to Access Denied page
-    window.location.href = "accessdenied.html";
+    window.location.href = "accessdenied.html"; // Redirect to Access Denied page
 }
+
+// Force a page reload when loaded from browser cache
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) { // If the page is loaded from the browser cache
+        console.log("Page loaded from cache. Forcing reload...");
+        window.location.reload(true); // Force reload, bypass cache
+    }
+});
 
 document.addEventListener("DOMContentLoaded", () => {
     try {
-        // Reinitialize the user pool
         const poolData = {
             UserPoolId: _config.cognito.userPoolId, // Cognito User Pool ID
             ClientId: _config.cognito.userPoolClientId, // Cognito App Client ID
@@ -20,17 +24,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-        // Check if the user is logged in
         const cognitoUser = userPool.getCurrentUser();
 
         if (cognitoUser) {
-            // Verify session validity
             cognitoUser.getSession((err, session) => {
                 if (err || !session.isValid()) {
                     console.warn("Session is invalid or expired.");
                     redirectToAccessDenied();
                 } else {
-                    console.log("Session is valid."); // Debugging
+                    console.log("Session is valid.");
                 }
             });
         } else {
@@ -39,6 +41,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     } catch (error) {
         console.error("Error during auth check:", error);
-        redirectToAccessDenied(); // Redirect on failure
+        redirectToAccessDenied();
     }
 });
