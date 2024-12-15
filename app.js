@@ -7,7 +7,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
   const statusMessage = document.getElementById("upload-status");
 
   progressBar.style.width = "0%";
-  progressBar.textContent = "";
+  progressBar.textContent = "0%";
   statusMessage.textContent = "";
 
   const idToken = sessionStorage.getItem("idToken");
@@ -18,6 +18,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
   if (file) {
     try {
+      // Step 1: Request presigned URL
       statusMessage.textContent = "Requesting upload URL...";
       console.log("Requesting presigned URL...");
 
@@ -39,21 +40,25 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         throw new Error("Failed to get presigned URL");
       }
 
-      const { url } = await response.json();
+      // Parse the response body (handle both string and object cases)
+      const jsonResponse = await response.json();
+      const body = typeof jsonResponse.body === "string" ? JSON.parse(jsonResponse.body) : jsonResponse.body;
+      const { url } = body;
+
       console.log("Received presigned URL:", url);
 
       if (!url) {
         throw new Error("Invalid presigned URL received!");
       }
 
-      // Step 2: Upload file to S3 with no additional headers
+      // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
       console.log(`Uploading file to presigned URL: ${url}`);
 
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
 
-      // Use only Content-Type header; no other headers allowed
+      // Use only Content-Type header
       xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
 
       xhr.upload.onprogress = (event) => {
