@@ -34,4 +34,28 @@ body {
     padding: 10px 20px;
     background-color: #b3f0f5;
   }
+
+
+  /* Progress bar styles */
+  #progress-container {
+    width: 100%;
+    background-color: #f3f3f3;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+
+  #progress-bar {
+    width: 0%;
+    height: 20px;
+    background-color: #4caf50;
+    text-align: center;
+    line-height: 20px;
+    color: white;
+  }
+
+  #upload-status {
+    margin-top: 10px;
+  }
   
