@@ -20,7 +20,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
     try {
       statusMessage.textContent = "Requesting upload URL...";
       console.log("Requesting presigned URL...");
-      console.log("Request headers:", {
+      console.log("Request headers being sent:", {
         Authorization: `${idToken}`,
         "Content-Type": "application/json",
       });
@@ -54,6 +54,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
       }
 
       statusMessage.textContent = "Uploading file...";
+      console.log(`Uploading file to presigned URL: ${url}`);
       const uploadResponse = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": file.type },
