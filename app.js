@@ -42,13 +42,15 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
       // Parse the response body (handle both string and object cases)
       const jsonResponse = await response.json();
-      const { url } = jsonResponse;
+      const body = typeof jsonResponse.body === "string" ? JSON.parse(jsonResponse.body) : jsonResponse;
+      const { url } = body;
       
       console.log("Received presigned URL:", url);
-
+      
       if (!url) {
         throw new Error("Invalid presigned URL received!");
       }
+      
 
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
