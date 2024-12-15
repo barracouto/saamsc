@@ -1,4 +1,4 @@
-const API_GATEWAY_URL = "https://z0uqpw0kcg.execute-api.us-east-1.amazonaws.com"; // Replace with your API Gateway URL
+const API_GATEWAY_URL = "https://m2fb5z7rqi.execute-api.us-east-1.amazonaws.com"; // Replace with your API Gateway URL
 
 // Handle File Upload
 document.getElementById("upload-button").addEventListener("click", async () => {
