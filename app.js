@@ -20,7 +20,7 @@ document.getElementById("upload-button").addEventListener("click", async () => {
     try {
       // Step 1: Request presigned URL
       statusMessage.textContent = "Requesting upload URL...";
-      console.log("Requesting presigned URL...");
+      console.log("Requesting presigned URL for file:", file.name);
 
       const response = await fetch(API_GATEWAY_URL, {
         method: "POST",
@@ -40,45 +40,50 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         throw new Error("Failed to get presigned URL");
       }
 
-      // Parse the response body (handle both string and object cases)
+      // Parse the response body
       const jsonResponse = await response.json();
+      console.log("Full API Response:", jsonResponse);
+
       const body = typeof jsonResponse.body === "string" ? JSON.parse(jsonResponse.body) : jsonResponse;
       const { url } = body;
-      
+
       console.log("Received presigned URL:", url);
-      
+
       if (!url) {
         throw new Error("Invalid presigned URL received!");
       }
-      
 
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
-      console.log(`Uploading file to presigned URL: ${url}`);
+      console.log(`Starting upload to S3 using URL: ${url}`);
 
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
 
-      // Use only Content-Type header
-      xhr.setRequestHeader("Content-Type", file.type || "application/octet-stream");
+      // Content-Type header only
+      const contentType = file.type || "application/octet-stream";
+      console.log("File Content-Type:", contentType);
+      xhr.setRequestHeader("Content-Type", contentType);
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
           const percentComplete = Math.round((event.loaded / event.total) * 100);
           progressBar.style.width = `${percentComplete}%`;
           progressBar.textContent = `${percentComplete}%`;
+          console.log(`Upload progress: ${percentComplete}%`);
         }
       };
 
       xhr.onload = () => {
+        console.log("S3 PUT request completed. Status:", xhr.status);
         if (xhr.status === 200) {
           progressBar.style.width = "100%";
           progressBar.textContent = "100%";
           statusMessage.textContent = "Upload successful!";
           console.log("File uploaded successfully.");
         } else {
-          console.error(`S3 PUT request failed. Status: ${xhr.status}`);
-          statusMessage.textContent = "Upload failed. S3 PUT request error.";
+          console.error("S3 PUT request failed. Response text:", xhr.responseText);
+          statusMessage.textContent = `Upload failed. Status: ${xhr.status}`;
         }
       };
 
@@ -87,9 +92,10 @@ document.getElementById("upload-button").addEventListener("click", async () => {
         statusMessage.textContent = "Upload failed due to network error.";
       };
 
+      console.log("Sending file data to S3...");
       xhr.send(file);
     } catch (err) {
-      console.error("Error:", err.message);
+      console.error("Error during upload process:", err.message);
       statusMessage.textContent = `Upload failed. ${err.message}`;
     }
   } else {
