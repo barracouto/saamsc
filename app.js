@@ -12,28 +12,38 @@ document.getElementById("upload-button").addEventListener("click", async () => {
   progressBar.textContent = "";
   statusMessage.textContent = "";
 
+  // Check if user is authenticated
+  const idToken = sessionStorage.getItem("idToken");
+  if (!idToken) {
+    alert("You are not logged in. Please log in to upload files.");
+    return;
+  }
+
   if (file) {
     try {
-      // Get presigned URL from API Gateway
+      // Request presigned URL
       statusMessage.textContent = "Requesting upload URL...";
       const response = await fetch(API_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${sessionStorage.getItem("idToken")}`,
+          Authorization: `Bearer ${idToken}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ fileName: file.name, fileType: file.type }),
+        body: JSON.stringify({
+          key: file.name,
+          action: "putObject",
+        }),
       });
 
       if (!response.ok) {
         throw new Error("Failed to get presigned URL");
       }
 
-      const { uploadUrl } = await response.json();
+      const { url } = await response.json();
 
       // Upload file to S3
       statusMessage.textContent = "Uploading file...";
-      const uploadResponse = await fetch(uploadUrl, {
+      const uploadResponse = await fetch(url, {
         method: "PUT",
         headers: { "Content-Type": file.type },
         body: file,
@@ -55,18 +65,3 @@ document.getElementById("upload-button").addEventListener("click", async () => {
     alert("Please select a file to upload.");
   }
 });
-
-// Optional: Progress bar simulation (not required for S3 PUT but enhances UX)
-function simulateProgress() {
-  const progressBar = document.getElementById("progress-bar");
-  let progress = 0;
-  const interval = setInterval(() => {
-    if (progress >= 100) {
-      clearInterval(interval);
-    } else {
-      progress += 10;
-      progressBar.style.width = progress + "%";
-      progressBar.textContent = progress + "%";
-    }
-  }, 100); // Simulates progress every 100ms
-}
