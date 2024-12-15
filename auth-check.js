@@ -1,7 +1,5 @@
 // auth-check.js
 
-// Ensure AWS Cognito SDK and configuration (_config) are loaded before this script
-
 // Function to redirect to the Access Denied page
 function redirectToAccessDenied() {
     window.location.href = "accessdenied.html"; // Redirect to Access Denied page
@@ -25,11 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
             cognitoUser.getSession((err, session) => {
                 if (err || !session.isValid()) {
                     console.warn("Session is invalid or expired.");
-                    // Clear stored user data and redirect
+                    // Force clear session and redirect
+                    localStorage.clear();
                     sessionStorage.clear();
                     redirectToAccessDenied();
                 } else {
-                    console.log("Session is valid.");
+                    console.log("Session is valid."); // For debugging purposes
                 }
             });
         } else {
