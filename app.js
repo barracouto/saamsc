@@ -23,10 +23,14 @@ document.getElementById("upload-button").addEventListener("click", async () => {
     try {
       // Request presigned URL
       statusMessage.textContent = "Requesting upload URL...";
+      console.log("Headers being sent:", {
+        Authorization: `${idToken}`,
+        "Content-Type": "application/json",
+      });
       const response = await fetch(API_GATEWAY_URL, {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${idToken}`,
+          Authorization: `${idToken}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
