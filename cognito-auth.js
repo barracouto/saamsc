@@ -155,7 +155,7 @@ var SaaMsc = window.SaaMsc || {};
             alert('Passwords do not match');
         }
     }
-    
+
     // Display the current user's username in the header
     document.addEventListener("DOMContentLoaded", () => {
         const cognitoUser = userPool.getCurrentUser();
@@ -185,7 +185,7 @@ var SaaMsc = window.SaaMsc || {};
     
         // Clear app session and redirect
         sessionStorage.clear();
-        window.location.href = "signin.html"; // Redirect to the login page
+        window.location.href = "index.html"; // Redirect to the login page
     });
 
     function handleVerify(event) {
