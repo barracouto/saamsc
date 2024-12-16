@@ -57,15 +57,12 @@ document.getElementById("upload-button").addEventListener("click", async () => {
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
       console.log(`Uploading file "${file.name}" to presigned URL: ${url}`);
-      console.log(`File Content-Type: ${file.type || "application/octet-stream"}`);
-      console.log("Sending file data to S3...");
 
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
 
-      // Use only Content-Type header
-      const contentType = file.type || "application/octet-stream";
-      xhr.setRequestHeader("Content-Type", contentType);
+      // Remove Content-Type header (let the server decide)
+      console.log("Sending file data to S3 without explicitly setting Content-Type...");
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
