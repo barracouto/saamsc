@@ -42,17 +42,9 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
       const jsonResponse = await response.json();
       const body = typeof jsonResponse.body === "string" ? JSON.parse(jsonResponse.body) : jsonResponse;
-      const { url } = body;
+      const { url, contentType } = body;
 
       console.log("Received presigned URL:", url);
-
-      if (!url) {
-        throw new Error("Invalid presigned URL received!");
-      }
-
-      // Log query parameters for debugging
-      const urlObj = new URL(url);
-      console.log("Presigned URL Query Parameters:", urlObj.searchParams.toString());
 
       // Step 2: Upload file to S3
       statusMessage.textContent = "Uploading file...";
@@ -61,8 +53,11 @@ document.getElementById("upload-button").addEventListener("click", async () => {
       const xhr = new XMLHttpRequest();
       xhr.open("PUT", url, true);
 
-      // Remove Content-Type header (let the server decide)
-      console.log("Sending file data to S3 without explicitly setting Content-Type...");
+      // Explicitly set required headers
+      xhr.setRequestHeader("Content-Type", contentType);
+      xhr.setRequestHeader("x-amz-server-side-encryption", "AES256");
+
+      console.log("Sending file data to S3 with Content-Type and encryption headers...");
 
       xhr.upload.onprogress = (event) => {
         if (event.lengthComputable) {
@@ -74,8 +69,6 @@ document.getElementById("upload-button").addEventListener("click", async () => {
 
       xhr.onload = () => {
         console.log("S3 PUT Response Status:", xhr.status);
-        console.log("S3 PUT Response:", xhr.responseText);
-
         if (xhr.status === 200) {
           progressBar.style.width = "100%";
           progressBar.textContent = "100%";
@@ -83,7 +76,6 @@ document.getElementById("upload-button").addEventListener("click", async () => {
           console.log("File uploaded successfully.");
         } else {
           console.error(`S3 PUT request failed. Status: ${xhr.status}`);
-          console.error(`S3 Response: ${xhr.responseText}`);
           statusMessage.textContent = `Upload failed. Status: ${xhr.status}`;
         }
       };
